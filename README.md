@@ -52,6 +52,8 @@ $ babel src -d lib
 $ npm run build
 ```
 
+表示将src下的相关js文件打包到当前文件夹下的lib文件夹下（如果没有则新建）
+
 ## babel-node
 
 babel-cli自带一个babel-node命令,可以直接运行ES6的代码
