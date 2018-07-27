@@ -69,6 +69,7 @@ $ npm install babel-cli --save-dev
 		"test":"babel-node script.js"
 	}
 }
+```
 
 
 ## babel-register
