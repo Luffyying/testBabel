@@ -4,6 +4,17 @@
 
 Babel的配置文件是.babelrc,存放在项目的根目录下，首先配置这个文件
 
+>.babelrc用于配置除回调函数以为的所有babel api选项,plugins用于配置我们转义所需要的插件，
+presets用于配置我们所需要的转译器
+
+>babel-cli仅仅是为了我们在命令行中使用babel,但是要转码还得安装转译器
+
+>我们在.babelrc中配置的选项都可以通过命令行来添加(二者冲突的时候，以文件为准)如：
+
+>babel src -dlib --presets=env 等价于 "presets":["env"]
+
+>如果不使用转译器,则在命令行中使用babel的时候，转译后的文件和源文件并无差别
+
 1.该文件用来设置转码规则和插件,基本格式如下
 
 ```js
@@ -93,6 +104,72 @@ import 'babel-polyfill';
 // 或者
 require('babel-polyfill');
 ```
+
+## Babel和其他工具
+
+>静态分析工具
+
+新的标准为语言带来了许多新的语法，语法检查就不可避免了，ESLint是最流行的语法检查工具之一
+
+## 最好不要全局安装babel,最好使用.babelrc文件
+
+
+##还有一点需要主要：如果你想要在你的项目中，用命令行直接babel,或者.babelrc文件中，直接写"babel xxxx"
+你需要全局安装babel,否则使用完整路径,类似这样：
+
+```js
+"scripts": {
+    "build": "node_modules\\.bin\\babel src -d lib"
+}
+npm run build
+```
+
+```js
+cmd: \test\node_modules\\.bin\\babel src -d lib
+
+##还有一点要注意：
+
+```js
+class MyDate extends Date {
+  test() {
+    return this.getTime()
+  }
+}
+let myDate = new MyDate()
+myDate.test()
+```
+当你用es6的语法写了这样一段代码，编译后引用在index.html,控制台报错
+
+```js
+Uncaught TypeError: this is not a Date object.
+    at MyDate.getTime (<anonymous>)
+    at MyDate.test (latest.js:23)
+    at latest.js:31
+```
+
+因为在 JS 底层有限制，如果不是由 Date 构造出来的实例的话，是不能调用 Date 里的函数的。所以这也侧面的说明了：ES6 中的 class 继承与 ES5 中的一般继承写法是不同的
+所以我们这样来设计：
+
+
+```js
+function MyDate{}
+MyDate.prototype.test = function(){
+  return this.getTime()
+}
+let d = new Date()
+Object.setPrototypeOf(d,MyDate.prototype)
+Object.setPrototypeOf(MyDate.prototype,Date.prototype)
+```
+
+Object.setPrototypeOf(obj,proto),用来将obj.__proto__ 设置为proto
+Object.getPrototypeOf(obj),返回obj.__proto__
+
+
+这样就完美的解决了JS底层的这个限制
+
+
+
+
 
 
 
